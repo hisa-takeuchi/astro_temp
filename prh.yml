@@ -1,0 +1,13 @@
+version: 1
+rules:
+  - expected: お問い合わせ
+    patterns:
+      - /(問合わせ|お問合わせ)/
+      - /(?<!お)問い合わせ/
+    specs:
+      - from: 問い合わせ
+        to: お問い合わせ
+      - from: 問合わせ
+        to: お問い合わせ
+      - from: お問合わせ
+        to: お問い合わせ

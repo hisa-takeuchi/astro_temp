@@ -1,0 +1,25 @@
+---
+export interface Props {
+  title?: string
+  description?: string
+  url?: string
+  image?: string
+}
+
+const { title = '', description = '', url, image } = Astro.props
+const siteName = 'Astro Template'
+---
+
+<>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content={siteName} />
+  <meta property="og:url" content={url} />
+  <meta property="og:image" content={image} />
+</>

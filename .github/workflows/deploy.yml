@@ -1,0 +1,59 @@
+name: Deploy
+
+on:
+  push:
+    # このCIを実行する場合は以下の行のコメントアウトを外してbranches-ignoreを削除する
+    # branches: [main, production]
+    branches-ignore: ['**']
+
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: ${{ github.ref == 'refs/heads/production' && 'production' || 'staging' }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup NodeJs
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: Install Dependencies
+        run: yarn install
+      - name: Build
+        run: yarn build
+      - name: Copy other files (STG)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          cp ./.htpasswd ./dist/
+          cp ./.htaccess-stg ./dist/.htaccess
+
+      - name: Copy other files (PROD)
+        if: github.ref == 'refs/heads/production'
+        run: |
+          cp ./.htpasswd ./dist/
+          cp ./.htaccess-prod ./dist/.htaccess
+
+      - name: Sync files (STG)
+        if: github.ref == 'refs/heads/main'
+        uses: SamKirkland/FTP-Deploy-Action@4.3.3
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          port: 21
+          protocol: ftp
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_SERVER_DIR_STG }}
+          local-dir: ./dist/
+
+      - name: Sync files (PROD)
+        if: github.ref == 'refs/heads/production'
+        uses: SamKirkland/FTP-Deploy-Action@4.3.3
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          port: 21
+          protocol: ftp
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_SERVER_DIR_PROD }}
+          local-dir: ./dist/

@@ -1,0 +1,6 @@
+# Staging .htaccess file
+
+# AuthUserFile /example.com/.htpasswd
+# AuthName "Input ID and Password."
+# AuthType Basic
+# require valid-user

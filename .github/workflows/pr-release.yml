@@ -1,0 +1,20 @@
+name: Create pull request
+on:
+  push:
+    branches:
+      - main
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: check
+        id: check_pr
+        run: |
+          echo "::set-output name=count::$(gh pr list -B production | wc -l)"
+      - name: Create Pull Request
+        if: ${{ steps.check_pr.outputs.count == 0 }}
+        run: |
+          gh pr create -B "production" -t "本番反映" -b ""
